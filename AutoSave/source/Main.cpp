@@ -1,16 +1,16 @@
 #include <plugin.h> // Plugin-SDK version 1004 from 2026-04-18 13:03:53
 #include <CMessages.h>
 #include <CPedGroups.h>
-#include <CGenericGameStorage.h>
 #include <CStats.h>
-#include <string>
+#include <C_PcSave.h>
+#include <Windows.h>
 
 using namespace plugin;
 
 struct Main
 {
     bool WasOnMission;
-    std::string LastMissionPassedname;
+    int LastMissionProgress;
 
     Main()
     {
@@ -19,10 +19,21 @@ struct Main
         Events::initGameEvent += [] {gInstance.Init(); };
     }
 
+    int GetCurrentSavePercent()
+    {
+        return (int)std::round(CStats::GetPercentageProgress() * 100.0f);
+    }
+
+    bool savenow()
+    {
+        PcSaveHelper.DeleteSlot(7);
+        return !PcSaveHelper.SaveSlot(7); //its inverted i dont know why
+    }
+
     void Init()
     {
         WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
-        LastMissionPassedname = CStats::LastMissionPassedName;
+        LastMissionProgress = GetCurrentSavePercent();
         return;
     }
 
@@ -30,19 +41,20 @@ struct Main
     {
         if (WasOnMission && !CPedGroups::ms_bIsPlayerOnAMission)
         {
-            if (LastMissionPassedname == CStats::LastMissionPassedName)
+            if (LastMissionProgress == GetCurrentSavePercent())
             {
+                LastMissionProgress = GetCurrentSavePercent();
                 WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
                 return;
             }
-            if (CGenericGameStorage::GenericSave(1)) //i have no clue about the meaning of this param maybe some docs are in order?
+            if (savenow())
             {
-                CMessages::AddMessageJumpQ("Autosaving...", 500, 0);
+                CMessages::AddMessageJumpQ("Autosaving...", 3000, 0);
             }
             else {
-                CMessages::AddMessageJumpQ("Failed to autosave...", 500, 0);
+                CMessages::AddMessageJumpQ("Failed to autosave...", 3000, 0);
             }
-            LastMissionPassedname = CStats::LastMissionPassedName;
+            LastMissionProgress = GetCurrentSavePercent();
         }
 
         WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
