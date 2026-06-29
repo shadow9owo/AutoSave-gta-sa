@@ -2,12 +2,15 @@
 #include <CMessages.h>
 #include <CPedGroups.h>
 #include <CGenericGameStorage.h>
+#include <CStats.h>
+#include <string>
 
 using namespace plugin;
 
 struct Main
 {
     bool WasOnMission;
+    std::string LastMissionPassedname;
 
     Main()
     {
@@ -19,6 +22,7 @@ struct Main
     void Init()
     {
         WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
+        LastMissionPassedname = CStats::LastMissionPassedName;
         return;
     }
 
@@ -26,6 +30,10 @@ struct Main
     {
         if (WasOnMission && !CPedGroups::ms_bIsPlayerOnAMission)
         {
+            if (!std::strcmp(LastMissionPassedname.c_str(), CStats::LastMissionPassedName))
+            {
+                return;
+            }
             if (CGenericGameStorage::GenericSave(1)) //i have no clue about the meaning of this param maybe some docs are in order?
             {
                 CMessages::AddMessageJumpQ("Autosaving...", 500, 0);
@@ -33,6 +41,7 @@ struct Main
             else {
                 CMessages::AddMessageJumpQ("Failed to autosave...", 500, 0);
             }
+            LastMissionPassedname = CStats::LastMissionPassedName;
         }
 
         WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
