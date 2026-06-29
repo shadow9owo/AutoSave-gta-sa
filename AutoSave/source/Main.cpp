@@ -30,7 +30,7 @@ struct Main
     {
         if (WasOnMission && !CPedGroups::ms_bIsPlayerOnAMission)
         {
-            if (!std::strcmp(LastMissionPassedname.c_str(), CStats::LastMissionPassedName))
+            if (LastMissionPassedname == CStats::LastMissionPassedName)
             {
                 WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
                 return;
