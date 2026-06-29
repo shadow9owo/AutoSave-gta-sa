@@ -32,6 +32,7 @@ struct Main
         {
             if (!std::strcmp(LastMissionPassedname.c_str(), CStats::LastMissionPassedName))
             {
+                WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
                 return;
             }
             if (CGenericGameStorage::GenericSave(1)) //i have no clue about the meaning of this param maybe some docs are in order?
