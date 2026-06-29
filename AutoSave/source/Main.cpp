@@ -35,7 +35,7 @@ struct Main
                 WasOnMission = CPedGroups::ms_bIsPlayerOnAMission;
                 return;
             }
-            if (CGenericGameStorage::GenericSave(1)) //i have no clue about the meaning of this param maybe some docs are in order? edit: probably a force bool like param i cant say for sure though
+            if (CGenericGameStorage::GenericSave(1)) //i have no clue about the meaning of this param maybe some docs are in order?
             {
                 CMessages::AddMessageJumpQ("Autosaving...", 500, 0);
             }
